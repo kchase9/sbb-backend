@@ -1,0 +1,23 @@
+{
+  "name": "sbb-backend",
+  "version": "1.0.0",
+  "description": "backend for 4103",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ken3zy/sbb-backend.git"
+  },
+  "author": "Kristeen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ken3zy/sbb-backend/issues"
+  },
+  "homepage": "https://github.com/Ken3zy/sbb-backend#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
