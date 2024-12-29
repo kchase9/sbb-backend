@@ -27,6 +27,7 @@ const createTables = async () => {
       user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
       id SERIAL PRIMARY KEY,
       business_name VARCHAR(255) NOT NULL,
+      status VARCHAR(50) DEFAULT 'pending',
       trading_name VARCHAR(255),
       registration_type VARCHAR(255),
       primary_contact_name VARCHAR(255) NOT NULL,

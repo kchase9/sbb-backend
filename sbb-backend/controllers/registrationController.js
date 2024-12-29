@@ -1,6 +1,7 @@
 
 const RegistrationModel = require('../models/registrationModel');
 
+
 const registrationController = {
   async createRegistration(req, res) {
     try {
@@ -11,6 +12,30 @@ const registrationController = {
       res.status(500).json({ error: err.message });
     }
   },
+
+  async updateStatus(req, res) {
+      try {
+          const { id } = req.params; // Extract registration ID from URL
+          const { status } = req.body; // Extract status from request body
+
+          if (!status) {
+              return res.status(400).json({ error: 'Status is required' });
+          }
+
+          // Call the model to update the status
+          const updatedRegistration = await RegistrationModel.updateStatus(id, status);
+
+          if (!updatedRegistration) {
+              return res.status(404).json({ error: 'Registration not found' });
+          }
+
+          res.json(updatedRegistration);
+      } catch (error) {
+          console.error('Error updating registration status:', error.message);
+          res.status(500).json({ error: 'Failed to update registration status' });
+      }
+  },
+
 
   async getRegistrationsByUserId(req, res) {
     try {

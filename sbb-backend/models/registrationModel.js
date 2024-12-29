@@ -211,11 +211,37 @@ class RegistrationModel {
   // Delete registration
   static async delete(id) {
     try {
-      const query = 'DELETE FROM registrations WHERE user_id = $1 RETURNING *';
+      const query = 'DELETE FROM registrations WHERE id = $1 RETURNING *';
       const { rows } = await pool.query(query, [id]);
       return rows[0];
     } catch (error) {
       throw new Error(`Error deleting registration: ${error.message}`);
+    }
+  }
+
+  static async updateRegistrationStatus(req, res) {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const query = `
+            UPDATE registrations 
+            SET status = $1, 
+                updated_at = CURRENT_TIMESTAMP 
+            WHERE id = $2 
+            RETURNING *
+        `;
+
+        const result = await pool.query(query, [status, id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Registration not found' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating registration status:', error);
+        res.status(500).json({ error: 'Failed to update registration status' });
     }
   }
 
