@@ -144,6 +144,7 @@ app.use((err, req, res, next) => {
 });
 
 // API Routes
+// In your main app.js or index.js
 app.use('/api/document-change', documentChangeRequestRoutes);
 app.use('/api/document-store', documentStoreRoutes);
 app.use('/api/registrations', registrationRoutes);

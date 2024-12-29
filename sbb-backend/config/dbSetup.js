@@ -66,11 +66,23 @@ const createTables = async () => {
     );`,
     `CREATE TABLE IF NOT EXISTS appointments (
       id SERIAL PRIMARY KEY,
-      registration_id INTEGER REFERENCES registrations(id) ON DELETE CASCADE,
+      user_id INTEGER REFERENCES users(id),
+      user_email VARCHAR(255) NOT NULL,
+      purpose TEXT NOT NULL,
       appointment_date TIMESTAMP NOT NULL,
-      status VARCHAR(50) DEFAULT 'Pending',
+      status VARCHAR(50) DEFAULT 'pending',
+      processed_by INTEGER REFERENCES users(id),
+      processed_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );`,
+  );`,
+
+  `CREATE TABLE IF NOT EXISTS appointment_employees (
+      id SERIAL PRIMARY KEY,
+      appointment_id INTEGER REFERENCES appointments(id) ON DELETE CASCADE,
+      employee_name VARCHAR(255) NOT NULL,
+      job_title VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );`,
     `CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       email VARCHAR(255) UNIQUE NOT NULL,
