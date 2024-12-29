@@ -2,9 +2,29 @@ const pool = require('./db');
 
 const createTables = async () => {
   const queries = [
-    
+    `CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      role VARCHAR(50) DEFAULT 'user',
+      full_name VARCHAR(255) NOT NULL,
+      dob DATE NOT NULL,
+      gender VARCHAR(50),
+      marital_status VARCHAR(50),
+      differently_abled BOOLEAN DEFAULT FALSE,
+      education VARCHAR(50),
+      id_number VARCHAR(50) UNIQUE,
+      tin_number VARCHAR(50) UNIQUE,
+      phone VARCHAR(20),
+      address_line_1 VARCHAR(255),
+      address_line_2 VARCHAR(255),
+      address_line_3 VARCHAR(255),
+      region VARCHAR(50),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );`,
     // Registrations table
     `CREATE TABLE IF NOT EXISTS registrations (
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
       id SERIAL PRIMARY KEY,
       business_name VARCHAR(255) NOT NULL,
       trading_name VARCHAR(255),
@@ -49,6 +69,13 @@ const createTables = async () => {
       declaration_secondary_date DATE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`,
+    `CREATE TABLE IF NOT EXISTS registration_review(
+      id SERIAL PRIMARY KEY,
+      registration_id INTEGER REFERENCES registrations(id) ON DELETE CASCADE,
+      status VARCHAR(50),
+      reviewer_comment VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
     // Owners table
     `CREATE TABLE IF NOT EXISTS owners (
       id SERIAL PRIMARY KEY,
@@ -83,26 +110,6 @@ const createTables = async () => {
       job_title VARCHAR(255) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );`,
-    `CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      email VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'user',
-      full_name VARCHAR(255) NOT NULL,
-      dob DATE NOT NULL,
-      gender VARCHAR(50),
-      marital_status VARCHAR(50),
-      differently_abled BOOLEAN DEFAULT FALSE,
-      education VARCHAR(50),
-      id_number VARCHAR(50) UNIQUE,
-      tin_number VARCHAR(50) UNIQUE,
-      phone VARCHAR(20),
-      address_line_1 VARCHAR(255),
-      address_line_2 VARCHAR(255),
-      address_line_3 VARCHAR(255),
-      region VARCHAR(50),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );`,
     // Documents table
     `CREATE TABLE IF NOT EXISTS documents (
       id SERIAL PRIMARY KEY,

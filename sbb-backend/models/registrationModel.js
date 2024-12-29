@@ -1,27 +1,11 @@
 
-// const pool = require('../config/db');
-
-// const createRegistration = async (businessName, ownerName, email, phone) => {
-//   const result = await pool.query(
-//     'INSERT INTO registrations (business_name, owner_name, email, phone) VALUES ($1, $2, $3, $4) RETURNING *',
-//     [businessName, ownerName, email, phone]
-//   );
-//   return result.rows[0];
-// };
-
-// const getAllRegistrations = async () => {
-//   const result = await pool.query('SELECT * FROM registrations');
-//   return result.rows;
-// };
-
-// module.exports = { createRegistration, getAllRegistrations };
-
 const pool = require('../config/db');
 
 class RegistrationModel {
   // Create a new registration
   static async create(registrationData) {
     const {
+      user_id,
       business_name,
       trading_name,
       registration_type,
@@ -67,7 +51,7 @@ class RegistrationModel {
 
     const query = `
       INSERT INTO registrations (
-        business_name, trading_name, registration_type,
+        user_id, business_name, trading_name, registration_type,
         primary_contact_name, primary_contact_phone, primary_contact_email,
         secondary_contact_name, secondary_contact_phone, secondary_contact_email,
         physical_address, trading_address, mailing_address,
@@ -87,13 +71,13 @@ class RegistrationModel {
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
         $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
         $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
-        $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41
+        $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42
       )
       RETURNING *;
     `;
 
     const values = [
-      business_name, trading_name, registration_type,
+      user_id, business_name, trading_name, registration_type,
       primary_contact_name, primary_contact_phone, primary_contact_email,
       secondary_contact_name, secondary_contact_phone, secondary_contact_email,
       physical_address, trading_address, mailing_address,
@@ -115,6 +99,21 @@ class RegistrationModel {
       return rows[0];
     } catch (error) {
       throw new Error(`Error creating registration: ${error.message}`);
+    }
+  }
+
+  static async findByUserId(user_id) {
+    try {
+      const query = `
+        SELECT *
+        FROM registrations
+        WHERE user_id = $1
+        ORDER BY created_at DESC;
+      `;
+      const { rows } = await pool.query(query, [user_id]);
+      return rows;
+    } catch (error) {
+      throw new Error(`Error finding registrations by user_id: ${error.message}`);
     }
   }
 
