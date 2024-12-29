@@ -68,7 +68,6 @@ const appointmentController = {
             const appointment = await AppointmentModel.updateStatus(
                 req.params.appointmentId,
                 'approved',
-                req.user.id
             );
             res.json({
                 message: 'Appointment approved successfully',

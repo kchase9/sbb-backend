@@ -90,7 +90,7 @@ class AppointmentModel {
                 SELECT 
                     a.*,
                     json_agg(json_build_object(
-                        'name', ae.employee_name,
+                        'employeeName', ae.employee_name,
                         'jobTitle', ae.job_title
                     )) as employees
                 FROM appointments a
@@ -100,6 +100,7 @@ class AppointmentModel {
                 ORDER BY a.appointment_date DESC;
             `;
             const { rows } = await pool.query(query, [id]);
+
             return rows;
         } catch (error) {
             throw new Error(`Error finding appointments: ${error.message}`);
@@ -152,12 +153,12 @@ class AppointmentModel {
             const query = `
                 UPDATE appointments
                 SET 
-                    status = $1,
+                    status = $2,
                     processed_at = CURRENT_TIMESTAMP
-                WHERE id = $3
+                WHERE id = $1
                 RETURNING *;
             `;
-            const { rows } = await client.query(query, [status, id]);
+            const { rows } = await client.query(query, [ id, status]);
 
             await client.query('COMMIT');
             return rows[0];

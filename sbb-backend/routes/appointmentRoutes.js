@@ -9,10 +9,15 @@ router.post('/request', authenticateToken, appointmentController.createAppointme
 
 // Admin routes
 router.get('/pending', authenticateToken, isAdmin, appointmentController.getPendingAppointments);
+
 router.get('/:userId', authenticateToken, isAdmin, appointmentController.getUserAppointments);
-router.get('/:id', authenticateToken, isAdmin, appointmentController.getIdAppointments);
+
+router.get('/content/:id', authenticateToken, isAdmin, appointmentController.getIdAppointments);
+
 router.get('/', authenticateToken, isAdmin, appointmentController.getAppointments);
-router.post('/approve/:appointmentId', authenticateToken, isAdmin, appointmentController.approveStatus);
+
+router.get('/approve/:appointmentId', authenticateToken, isAdmin, appointmentController.approveStatus);
+
 router.delete('/reject/:id', authenticateToken, isAdmin, appointmentController.rejectAppointment);
 
 module.exports = router;
