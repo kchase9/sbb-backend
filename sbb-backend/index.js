@@ -120,12 +120,16 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 const ownerRoutes = require('./routes/ownerRoutes');
+const documentStoreRoutes = require('./routes/documentStoreRoutes');
 
 // Initialize express app
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+  }));
 app.use(express.json({ limit: '50mb' })); // Increased limit for file uploads
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -139,6 +143,7 @@ app.use((err, req, res, next) => {
 });
 
 // API Routes
+app.use('/api/document-store', documentStoreRoutes);
 app.use('/api/registrations', registrationRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/users', userRoutes);

@@ -106,7 +106,7 @@ const createTables = async () => {
       id_cards BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`,
-    `CREATE TABLE IF NOT EXISTS documents (
+    `CREATE TABLE IF NOT EXISTS document_store (
       id SERIAL PRIMARY KEY,
       user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
       document_type VARCHAR(255) NOT NULL,

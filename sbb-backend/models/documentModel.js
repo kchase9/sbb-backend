@@ -1,148 +1,62 @@
 const pool = require('../config/db');
 
 class DocumentModel {
-  // Upload a new document
-  static async create(documentData) {
-    const {
-      user_id,
-      document_type,
-      filename,
-      file_type,
-      file_size,
-      file_data
-    } = documentData;
-
-    const query = `
-      INSERT INTO documents (
-        user_id,
-        document_type,
-        filename,
-        file_type,
-        file_size,
-        file_data
-      )
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, user_id, document_type, filename, file_type, file_size, uploaded_at;
-    `;
-
-    const values = [
-      user_id,
-      document_type,
-      filename,
-      file_type,
-      file_size,
-      file_data
-    ];
-
+  static async create(userId) {
     try {
-      const { rows } = await pool.query(query, values);
+      const query = `
+        INSERT INTO documents (
+          user_id,
+          business_registration,
+          tin_certificate,
+          nis_certificate,
+          gra_compliance_letter,
+          nis_compliance_letter,
+          operational_license,
+          compliance_certificate,
+          owner_tin_certificate,
+          id_cards
+        ) VALUES ($1, false, false, false, false, false, false, false, false, false)
+        RETURNING *;
+      `;
+      const { rows } = await pool.query(query, [userId]);
       return rows[0];
     } catch (error) {
-      throw new Error(`Error creating document: ${error.message}`);
+      throw new Error(`Error creating document record: ${error.message}`);
     }
   }
 
-  // Get document by ID
-  static async findById(id) {
+  static async findByUserId(userId) {
     try {
-      const query = `
-        SELECT id, user_id, document_type, filename, file_type, file_size, file_data, uploaded_at
-        FROM documents
-        WHERE id = $1;
-      `;
-      const { rows } = await pool.query(query, [id]);
+      const query = 'SELECT * FROM documents WHERE user_id = $1';
+      const { rows } = await pool.query(query, [userId]);
       return rows[0];
     } catch (error) {
       throw new Error(`Error finding document: ${error.message}`);
     }
   }
 
-  // Get all documents for a user
-  static async findByUserId(userId, page = 1, limit = 10) {
+  static async updateDocumentStatus(userId, documentType, status) {
     try {
-      const offset = (page - 1) * limit;
       const query = `
-        SELECT 
-          id, document_type, filename, file_type, file_size, uploaded_at,
-          COUNT(*) OVER() as total_count
-        FROM documents
-        WHERE user_id = $1
-        ORDER BY uploaded_at DESC
-        LIMIT $2 OFFSET $3;
+        UPDATE documents 
+        SET ${documentType} = $1 
+        WHERE user_id = $2 
+        RETURNING *;
       `;
-      const { rows } = await pool.query(query, [userId, limit, offset]);
-      return {
-        documents: rows,
-        total: rows.length > 0 ? parseInt(rows[0].total_count) : 0,
-        page,
-        limit
-      };
-    } catch (error) {
-      throw new Error(`Error getting user documents: ${error.message}`);
-    }
-  }
-
-  // Update document metadata
-  static async update(id, documentData) {
-    const { document_type, filename } = documentData;
-
-    const query = `
-      UPDATE documents
-      SET 
-        document_type = COALESCE($1, document_type),
-        filename = COALESCE($2, filename)
-      WHERE id = $3
-      RETURNING id, user_id, document_type, filename, file_type, file_size, uploaded_at;
-    `;
-
-    try {
-      const { rows } = await pool.query(query, [document_type, filename, id]);
+      const { rows } = await pool.query(query, [status, userId]);
       return rows[0];
     } catch (error) {
-      throw new Error(`Error updating document: ${error.message}`);
+      throw new Error(`Error updating document status: ${error.message}`);
     }
   }
 
-  // Delete document
-  static async delete(id) {
+  static async deleteByUserId(userId) {
     try {
-      const query = 'DELETE FROM documents WHERE id = $1 RETURNING id';
-      const { rows } = await pool.query(query, [id]);
+      const query = 'DELETE FROM documents WHERE user_id = $1 RETURNING *';
+      const { rows } = await pool.query(query, [userId]);
       return rows[0];
     } catch (error) {
       throw new Error(`Error deleting document: ${error.message}`);
-    }
-  }
-
-  // Get documents by type
-  static async findByType(userId, documentType) {
-    try {
-      const query = `
-        SELECT id, document_type, filename, file_type, file_size, uploaded_at
-        FROM documents
-        WHERE user_id = $1 AND document_type = $2
-        ORDER BY uploaded_at DESC;
-      `;
-      const { rows } = await pool.query(query, [userId, documentType]);
-      return rows;
-    } catch (error) {
-      throw new Error(`Error getting documents by type: ${error.message}`);
-    }
-  }
-
-  // Check if document exists
-  static async exists(userId, documentType) {
-    try {
-      const query = `
-        SELECT EXISTS(
-          SELECT 1 FROM documents 
-          WHERE user_id = $1 AND document_type = $2
-        );
-      `;
-      const { rows } = await pool.query(query, [userId, documentType]);
-      return rows[0].exists;
-    } catch (error) {
-      throw new Error(`Error checking document existence: ${error.message}`);
     }
   }
 }
