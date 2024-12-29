@@ -116,6 +116,18 @@ const createTables = async () => {
       file_data BYTEA,
       uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`,
+    `CREATE TABLE IF NOT EXISTS document_change_requests (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      document_type VARCHAR(255) NOT NULL,
+      reason VARCHAR(255) NOT NULL,
+      other_reason TEXT,
+      status VARCHAR(50) DEFAULT 'pending', -- pending, approved, rejected
+      new_document_id INTEGER REFERENCES document_store(id),
+      requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      processed_at TIMESTAMP,
+      processed_by INTEGER REFERENCES users(id)
+  );`,
   ];
 
   try {

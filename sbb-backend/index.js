@@ -114,7 +114,8 @@ const { createTables } = require('./config/dbSetup');
 // Load environment variables from .env file
 dotenv.config();
 
-// Import routes
+// Import routes// In your main app.js or index.js
+const documentChangeRequestRoutes = require('./routes/documentChangeRequestRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -143,6 +144,7 @@ app.use((err, req, res, next) => {
 });
 
 // API Routes
+app.use('/api/document-change', documentChangeRequestRoutes);
 app.use('/api/document-store', documentStoreRoutes);
 app.use('/api/registrations', registrationRoutes);
 app.use('/api/appointments', appointmentRoutes);

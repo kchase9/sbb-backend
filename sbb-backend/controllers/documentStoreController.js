@@ -39,6 +39,7 @@ const documentStoreController = {
           return res.status(400).json({ error: 'User ID is required' });
         }
 
+        // Store file in document_store
         const documentData = {
           user_id: userId,
           document_type: req.body.documentType,
@@ -48,10 +49,9 @@ const documentStoreController = {
           file_data: req.file.buffer
         };
 
-        // Store the file in document_store
         const savedDocument = await DocumentStoreModel.create(documentData);
 
-        // Update the status in documents table
+        // Update the corresponding flag in documents table
         const columnName = getColumnName(req.body.documentType);
         if (columnName) {
           await DocumentModel.updateDocumentStatus(userId, columnName, true);

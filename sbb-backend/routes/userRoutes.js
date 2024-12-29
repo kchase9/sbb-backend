@@ -24,9 +24,10 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { authenticateToken, isAdmin } = require('../middleware/authMiddleware');
+const { authenticateToken, isAdmin, signOut } = require('../middleware/authMiddleware');
 
-// Auth routes (public)
+// Add this new route
+router.post('/signout', authenticateToken, signOut);
 router.post('/signup', userController.signup);
 router.post('/login', userController.login);
 
