@@ -105,10 +105,14 @@ class RegistrationModel {
   static async findByUserId(user_id) {
     try {
       const query = `
-        SELECT *
-        FROM registrations
-        WHERE user_id = $1
-        ORDER BY created_at DESC;
+        SELECT 
+                r.*, 
+                COALESCE(json_agg(o.*) FILTER (WHERE o.id IS NOT NULL), '[]') AS owners
+            FROM registrations r
+            LEFT JOIN owners o ON r.id = o.registration_id
+            WHERE r.user_id = $1
+            GROUP BY r.id
+            ORDER BY r.created_at DESC;
       `;
       const { rows } = await pool.query(query, [user_id]);
       return rows;
@@ -121,12 +125,13 @@ class RegistrationModel {
   static async findById(id) {
     try {
       const query = `
-        SELECT r.*, 
-               json_agg(o.*) as owners
-        FROM registrations r
-        LEFT JOIN owners o ON r.id = o.registration_id
-        WHERE r.id = $1
-        GROUP BY r.id;
+        SELECT 
+                r.*, 
+                COALESCE(json_agg(o.*) FILTER (WHERE o.id IS NOT NULL), '[]') AS owners
+            FROM registrations r
+            LEFT JOIN owners o ON r.id = o.registration_id
+            WHERE r.id = $1
+            GROUP BY r.id;
       `;
       const { rows } = await pool.query(query, [id]);
       return rows[0];
@@ -206,7 +211,7 @@ class RegistrationModel {
   // Delete registration
   static async delete(id) {
     try {
-      const query = 'DELETE FROM registrations WHERE id = $1 RETURNING *';
+      const query = 'DELETE FROM registrations WHERE user_id = $1 RETURNING *';
       const { rows } = await pool.query(query, [id]);
       return rows[0];
     } catch (error) {

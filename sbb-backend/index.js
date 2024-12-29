@@ -7,6 +7,7 @@ const { createTables } = require('./config/dbSetup');
 dotenv.config();
 
 // Import routes// In your main app.js or index.js
+const registrationReviewRoutes = require('./routes/registrationReviewRoutes');
 const documentChangeRequestRoutes = require('./routes/documentChangeRequestRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
@@ -37,6 +38,7 @@ app.use((err, req, res, next) => {
 
 // API Routes
 // In your main app.js or index.js
+app.use('/api/reviews', registrationReviewRoutes);
 app.use('/api/document-change', documentChangeRequestRoutes);
 app.use('/api/document-store', documentStoreRoutes);
 app.use('/api/registrations', registrationRoutes);
